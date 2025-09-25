@@ -12,9 +12,9 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      "http://localhost:5500", // VSCode Live Server
+      "https://jhyeein.github.io", // GitHub Pages
       "http://127.0.0.1:5500",
-      "http://localhost:8080"  // python http.server
+      "http://localhost:5500"  // 로컬테스트
     ],
     methods: ["GET", "POST"]
   })
