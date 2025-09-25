@@ -2,17 +2,19 @@ const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
 const bcrypt = require("bcryptjs");
+const { ethers } = require("ethers");
+require("dotenv").config();
 
 const app = express();
 app.use(express.json());
 
-// CORS: 프론트 도메인 허용
+// CORS 설정
 app.use(
   cors({
     origin: [
       "https://jhyeein.github.io", // GitHub Pages
-      "http://localhost:5500",     // 로컬 테스트
-      "http://127.0.0.1:5500"
+      "http://127.0.0.1:5500",
+      "http://localhost:5500"  // 로컬테스트
     ],
     methods: ["GET", "POST"]
   })
@@ -24,12 +26,12 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-// 헬스체크: GET /api
+// 헬스체크
 app.get("/api", (req, res) => {
   res.json({ ok: true, message: "API is working!" });
 });
 
-// 회원가입: POST /api/signup
+// 회원가입
 app.post("/api/signup", async (req, res) => {
   const { userId, password } = req.body;
   if (!userId || !password) {
@@ -51,7 +53,7 @@ app.post("/api/signup", async (req, res) => {
   }
 });
 
-// 로그인: POST /api/login
+// 로그인
 app.post("/api/login", async (req, res) => {
   const { userId, password } = req.body;
   try {
@@ -78,7 +80,7 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-// 지갑 생성: POST /api/wallet/create
+// 지갑 생성
 app.post("/api/wallet/create", async (req, res) => {
   const { userId } = req.body;
   if (!userId) {
@@ -86,16 +88,11 @@ app.post("/api/wallet/create", async (req, res) => {
   }
 
   try {
-    // 새 지갑 생성
     const wallet = ethers.Wallet.createRandom();
-
-    // DB에 저장 (userId, address, privateKey)
     await pool.query(
       "INSERT INTO wallets (user_id, address, private_key) VALUES ($1,$2,$3)",
       [userId, wallet.address, wallet.privateKey]
     );
-
-    // 클라이언트에는 주소만 반환
     res.json({ message: "지갑 생성 성공", address: wallet.address });
   } catch (e) {
     console.error(e);
@@ -103,5 +100,9 @@ app.post("/api/wallet/create", async (req, res) => {
   }
 });
 
-// Vercel 서버리스 함수 핸들러
-module.exports = (req, res) => app(req, res);
+// 로컬 실행
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`✅ 서버 실행 중: http://localhost:${PORT}`);
+});
+
