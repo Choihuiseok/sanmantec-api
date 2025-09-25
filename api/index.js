@@ -78,5 +78,30 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+// 지갑 생성: POST /api/wallet/create
+app.post("/api/wallet/create", async (req, res) => {
+  const { userId } = req.body;
+  if (!userId) {
+    return res.status(400).json({ message: "userId 필요" });
+  }
+
+  try {
+    // 새 지갑 생성
+    const wallet = ethers.Wallet.createRandom();
+
+    // DB에 저장 (userId, address, privateKey)
+    await pool.query(
+      "INSERT INTO wallets (user_id, address, private_key) VALUES ($1,$2,$3)",
+      [userId, wallet.address, wallet.privateKey]
+    );
+
+    // 클라이언트에는 주소만 반환
+    res.json({ message: "지갑 생성 성공", address: wallet.address });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "지갑 생성 실패" });
+  }
+});
+
 // Vercel 서버리스 함수 핸들러
 module.exports = (req, res) => app(req, res);
