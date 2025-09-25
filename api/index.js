@@ -99,10 +99,3 @@ app.post("/api/wallet/create", async (req, res) => {
     res.status(500).json({ message: "지갑 생성 실패" });
   }
 });
-
-// 로컬 실행
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`✅ 서버 실행 중: http://localhost:${PORT}`);
-});
-
