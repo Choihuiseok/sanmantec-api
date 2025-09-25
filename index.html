@@ -585,10 +585,10 @@
         }
 
         // 대시보드 내 버튼은 더미로 남겨둠
-        if(openCreateBtn) openCreateBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
+        // if(openCreateBtn) openCreateBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
         if(openClaimBtn) openClaimBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
-        if(emptyCreateBtn) emptyCreateBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
-        if(cancelCreateBtn) cancelCreateBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
+        // if(emptyCreateBtn) emptyCreateBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
+        // if(cancelCreateBtn) cancelCreateBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
         if(cancelClaimBtn) cancelClaimBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
         if(goDashboardBtn) goDashboardBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
         if(heirHelpBtn) heirHelpBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
@@ -596,7 +596,73 @@
         if(copyOwnerAddrBtn) copyOwnerAddrBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
         if(tabOutgoing) tabOutgoing.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
         if(tabIncoming) tabIncoming.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
+
+        let currentUserId = null; // ✅ 로그인된 사용자 ID 저장용
+
+    // 로그인 폼 제출 이벤트
+    loginView.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const userId = loginUserId.value.trim();
+      const password = loginPassword.value;
+
+      try {
+        const response = await fetch("https://sanmantec-api.vercel.app/api/login", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, password }),
+        });
+        const result = await response.json();
         
+        if (response.ok) {
+          alert(result.message);
+          currentUserId = userId;   // ✅ 로그인한 유저 ID 저장
+          show(dashView);
+        } else {
+          alert('로그인 실패: ' + result.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('서버와 연결할 수 없습니다.');
+      }
+    });
+
+    // ✅ 지갑 생성 함수
+    async function createWallet() {
+      if (!currentUserId) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
+      try {
+        const response = await fetch("https://sanmantec-api.vercel.app/api/wallet/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: currentUserId })
+        });
+        const result = await response.json();
+        if (response.ok) {
+          alert("지갑 생성 성공! 주소: " + result.address);
+          show(createdView); // 🎉 생성 완료 화면으로 이동
+        } else {
+          alert("지갑 생성 실패: " + result.message);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("지갑 생성 중 오류 발생");
+      }
+    }
+
+    // ✅ 대시보드 버튼 연결
+    if(openCreateBtn) openCreateBtn.addEventListener('click', () => show(createView));
+    if(emptyCreateBtn) emptyCreateBtn.addEventListener('click', () => show(createView));
+    if(cancelCreateBtn) cancelCreateBtn.addEventListener('click', () => show(dashView));
+
+    // ✅ 지갑 생성 폼 제출 이벤트
+    createView.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await createWallet();
+    });
+
+    if(goDashboardBtn) goDashboardBtn.addEventListener('click', () => show(dashView));
         // 초기 화면
         show(loginView);
       });
