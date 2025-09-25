@@ -588,6 +588,7 @@
         // if(openCreateBtn) openCreateBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         //if(openClaimBtn) openClaimBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
 =======
         // if(openClaimBtn) openClaimBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
@@ -595,10 +596,13 @@
 =======
            if(openClaimBtn) openClaimBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
 >>>>>>> a50aa446e6d64facd1c49dc76c4b2546518bb65e
+=======
+        if(openClaimBtn) openClaimBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
+>>>>>>> 45d9455f2a17714156b908bfa635a3106edea884
         // if(emptyCreateBtn) emptyCreateBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
         // if(cancelCreateBtn) cancelCreateBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
         if(cancelClaimBtn) cancelClaimBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
-        if(goDashboardBtn) goDashboardBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
+        // if(goDashboardBtn) goDashboardBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
         if(heirHelpBtn) heirHelpBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
         if(copyMetaLink) copyMetaLink.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
         if(copyOwnerAddrBtn) copyOwnerAddrBtn.addEventListener('click', () => { alert("이 기능은 구현되지 않았습니다."); });
@@ -634,37 +638,51 @@
       }
     });
 
+    let currentUserId = null; // ✅ 로그인한 사용자 ID 저장
+
+    // 로그인 이벤트 수정 (userId 저장 포함)
+    loginView.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const userId = loginUserId.value.trim();
+      const password = loginPassword.value;
+
+      const response = await fetch("https://sanmantec-api.vercel.app/api/login", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, password }),
+      });
+      const result = await response.json();
+
+      if (response.ok) {
+        currentUserId = userId;   // ✅ 로그인 ID 기억
+        show(dashView);
+      } else {
+        alert('로그인 실패: ' + result.message);
+      }
+    });
+
     // ✅ 지갑 생성 함수
     async function createWallet() {
-      if (!currentUserId) {
-        alert("로그인이 필요합니다.");
-        return;
-      }
-      try {
-        const response = await fetch("https://sanmantec-api.vercel.app/api/wallet/create", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: currentUserId })
-        });
-        const result = await response.json();
-        if (response.ok) {
-          alert("지갑 생성 성공! 주소: " + result.address);
-          show(createdView); // 🎉 생성 완료 화면으로 이동
-        } else {
-          alert("지갑 생성 실패: " + result.message);
-        }
-      } catch (err) {
-        console.error(err);
-        alert("지갑 생성 중 오류 발생");
+      const response = await fetch("https://sanmantec-api.vercel.app/api/wallet/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: currentUserId })
+      });
+      const result = await response.json();
+      if (response.ok) {
+        alert("지갑 생성 성공! 주소: " + result.address);
+        show(createdView);
+      } else {
+        alert("지갑 생성 실패: " + result.message);
       }
     }
 
-    // ✅ 대시보드 버튼 연결
+    // ✅ 지갑 생성 버튼 연결
     if(openCreateBtn) openCreateBtn.addEventListener('click', () => show(createView));
     if(emptyCreateBtn) emptyCreateBtn.addEventListener('click', () => show(createView));
     if(cancelCreateBtn) cancelCreateBtn.addEventListener('click', () => show(dashView));
 
-    // ✅ 지갑 생성 폼 제출 이벤트
+    // ✅ 지갑 생성 폼 제출 시 API 호출
     createView.addEventListener('submit', async (e) => {
       e.preventDefault();
       await createWallet();
