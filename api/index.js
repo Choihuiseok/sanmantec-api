@@ -99,3 +99,6 @@ app.post("/api/wallet/create", async (req, res) => {
     res.status(500).json({ message: "지갑 생성 실패" });
   }
 });
+
+// Vercel 서버리스 함수 핸들러
+module.exports = (req, res) => app(req, res);
