@@ -14,6 +14,7 @@ app.use(
       "https://jhyeein.github.io", // GitHub Pages
       "http://localhost:5500",     // 로컬 테스트
       "http://127.0.0.1:5500"
+	"https://sanmantec.vercel.app" 
     ],
     methods: ["GET", "POST"]
   })
