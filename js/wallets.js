@@ -137,7 +137,7 @@ window.App = window.App || {};
         const tx = await signer.sendTransaction({ to, value: window.ethers.parseEther(amountStr) });
         alert(`전송 전송됨!\nTX Hash: ${tx.hash}`);
         if (typeof window.open === "function") {
-          window.open(`https://sepolia.etherscan.io/tx/${tx.hash}`, "_blank");
+          window.open(`https://kaiascan.io/tx/${tx.hash}`, "_blank");
         }
 
         if (balEl) balEl.textContent = "전송 반영 중...";

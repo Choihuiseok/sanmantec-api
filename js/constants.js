@@ -2,10 +2,8 @@
 window.App = window.App || {};
 
 (function () {
-  App.API = "https://sanmantec-api.vercel.app";
-  App.SEPOLIA_RPCS = [
-    "https://eth-sepolia.public.blastapi.io",
-    "https://ethereum-sepolia.blockpi.network/v1/rpc/public",
-    "https://rpc.ankr.com/eth_sepolia"
+  App.API = "https://sanmantec-api.vercel.app"; // 그대로 유지
+  App.KAIA_RPCS = [
+    "https://public-en-baobab.kaia.io",
   ];
 })();
