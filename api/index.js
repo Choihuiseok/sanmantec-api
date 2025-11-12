@@ -1,12 +1,12 @@
-
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
 const bcrypt = require("bcryptjs");
 const { ethers } = require("ethers");
+require("dotenv").config();
 
-// --- Kaia 설정 (추가 부분)
-const CONTRACT_ADDRESS = "0xYourKaiaContractAddress"; // 배포한 Kaia Testnet 컨트랙트 주소
+// --- Kaia 설정 ---
+const CONTRACT_ADDRESS = "0xYourKaiaContractAddress"; // Kaia Testnet 컨트랙트 주소
 const contractABI = require("./contractABI.json");     // ABI 파일 (api 폴더에 추가)
 
 // --- Express 설정 ---
@@ -15,7 +15,8 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      "https://jhyeein.github.io", // GitHub Pages
+      "https://jhyeein.github.io",
+      "https://sanmantec-api.vercel.app",
       "http://localhost:5500",
       "http://127.0.0.1:5500",
     ],
@@ -45,13 +46,15 @@ app.get("/api", (req, res) => {
 // --- 회원가입 ---
 app.post("/api/signup", async (req, res) => {
   const { userId, password } = req.body;
-  if (!userId || !password) return res.status(400).json({ message: "입력값 확인 필요" });
+  if (!userId || !password)
+    return res.status(400).json({ message: "입력값 확인 필요" });
   try {
     const hash = await bcrypt.hash(password, 12);
     await pool.query("INSERT INTO users (user_id, password_hash) VALUES ($1,$2)", [userId, hash]);
     res.status(201).json({ message: "회원가입 성공" });
   } catch (e) {
-    if (e.code === "23505") return res.status(409).json({ message: "이미 존재하는 아이디입니다." });
+    if (e.code === "23505")
+      return res.status(409).json({ message: "이미 존재하는 아이디입니다." });
     console.error(e);
     res.status(500).json({ message: "서버 오류" });
   }
@@ -80,9 +83,7 @@ app.post("/api/wallet/save", async (req, res) => {
     return res.status(400).json({ message: "userId, address, keystore 필요" });
   try {
     await pool.query("INSERT INTO wallets (user_id, address, keystore_json) VALUES ($1,$2,$3)", [
-      userId,
-      address,
-      keystore,
+      userId, address, keystore,
     ]);
     res.json({ message: "지갑 저장 성공", address });
   } catch (e) {
@@ -126,7 +127,19 @@ app.post("/api/wallet/delete", async (req, res) => {
   }
 });
 
-// --- 예시: Kaia 컨트랙트 호출 API (서버 트랜잭션)
+// --- Kaia 잔액 조회 프록시 ---
+app.get("/api/balance/:address", async (req, res) => {
+  try {
+    const { address } = req.params;
+    const bal = await provider.getBalance(address);
+    res.json({ balance: ethers.formatEther(bal) });
+  } catch (e) {
+    console.error("[잔액조회 실패]", e.message);
+    res.status(500).json({ message: "잔액조회 실패", error: e.message });
+  }
+});
+
+// --- 예시: Kaia 컨트랙트 호출 API ---
 app.post("/api/contract/setValue", async (req, res) => {
   try {
     const { newValue } = req.body;
