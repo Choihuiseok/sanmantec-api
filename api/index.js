@@ -186,3 +186,13 @@ app.post("/api/contract/submit", async (req, res) => {
 
 // --- Vercel 핸들러 ---
 module.exports = (req, res) => app(req, res);
+// --- KAS 연결 테스트 ---
+app.get("/api/test-kas", async (req, res) => {
+  try {
+    const blockNumber = await caver.rpc.klay.getBlockNumber();
+    res.json({ ok: true, blockNumber });
+  } catch (e) {
+    console.error("[KAS 연결 실패]", e.message);
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
