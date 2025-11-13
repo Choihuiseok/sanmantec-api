@@ -7,7 +7,13 @@ window.App = window.App || {};
     const ethers = window.ethers;
     if (_cachedProvider) return _cachedProvider;
 
-    for (const url of App.KAIA_RPCS) {
+    // Kaia RPC 후보 (KAS Node 포함)
+    const urls = [
+      "https://node-api.klaytnapi.com/v1/baobab",
+      "https://public-en-baobab.kaia.io"
+    ];
+
+    for (const url of urls) {
       try {
         const prov = new ethers.JsonRpcProvider(url, {
           name: "kaia-testnet",

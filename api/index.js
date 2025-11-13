@@ -2,14 +2,11 @@ const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
 const bcrypt = require("bcryptjs");
-const { ethers } = require("ethers");
+const Caver = require("caver-js");
+const contractABI = require("./contractABI.json");
+
 require("dotenv").config();
 
-// --- Kaia 설정 ---
-const CONTRACT_ADDRESS = "0xYourKaiaContractAddress"; // Kaia Testnet 컨트랙트 주소
-const contractABI = require("./contractABI.json");     // ABI 파일 (api 폴더에 추가)
-
-// --- Express 설정 ---
 const app = express();
 app.use(express.json());
 app.use(
@@ -30,13 +27,28 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false },
 });
 
-// --- Kaia Provider + 서버용 지갑 설정 ---
-const provider = new ethers.JsonRpcProvider(process.env.RPC_URL, {
-  name: "kaia-testnet",
-  chainId: 1001,
-});
-const serverWallet = new ethers.Wallet(process.env.SERVER_PRIVATE_KEY, provider);
-const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, serverWallet);
+// --- Kaia(KAS) Provider + Wallet 설정 ---
+const caver = new Caver(
+  new Caver.providers.HttpProvider(process.env.RPC_URL, {
+    headers: [
+      {
+        name: "Authorization",
+        value:
+          "Basic " +
+          Buffer.from(
+            process.env.KAS_ACCESS_KEY_ID + ":" + process.env.KAS_SECRET_ACCESS_KEY
+          ).toString("base64"),
+      },
+      { name: "x-chain-id", value: "1001" },
+    ],
+  })
+);
+
+const wallet = caver.wallet.keyring.createFromPrivateKey(process.env.SERVER_PRIVATE_KEY);
+caver.wallet.add(wallet);
+
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS;
+const contract = new caver.contract(contractABI, CONTRACT_ADDRESS);
 
 // --- 헬스체크 ---
 app.get("/api", (req, res) => {
@@ -50,7 +62,10 @@ app.post("/api/signup", async (req, res) => {
     return res.status(400).json({ message: "입력값 확인 필요" });
   try {
     const hash = await bcrypt.hash(password, 12);
-    await pool.query("INSERT INTO users (user_id, password_hash) VALUES ($1,$2)", [userId, hash]);
+    await pool.query("INSERT INTO users (user_id, password_hash) VALUES ($1,$2)", [
+      userId,
+      hash,
+    ]);
     res.status(201).json({ message: "회원가입 성공" });
   } catch (e) {
     if (e.code === "23505")
@@ -66,9 +81,15 @@ app.post("/api/login", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM users WHERE user_id=$1", [userId]);
     const row = result.rows[0];
-    if (!row) return res.status(401).json({ message: "아이디 또는 비밀번호가 올바르지 않습니다." });
+    if (!row)
+      return res
+        .status(401)
+        .json({ message: "아이디 또는 비밀번호가 올바르지 않습니다." });
     const ok = await bcrypt.compare(password, row.password_hash);
-    if (!ok) return res.status(401).json({ message: "아이디 또는 비밀번호가 올바르지 않습니다." });
+    if (!ok)
+      return res
+        .status(401)
+        .json({ message: "아이디 또는 비밀번호가 올바르지 않습니다." });
     res.json({ message: "로그인 성공", user: { userId: row.user_id } });
   } catch (e) {
     console.error(e);
@@ -83,7 +104,9 @@ app.post("/api/wallet/save", async (req, res) => {
     return res.status(400).json({ message: "userId, address, keystore 필요" });
   try {
     await pool.query("INSERT INTO wallets (user_id, address, keystore_json) VALUES ($1,$2,$3)", [
-      userId, address, keystore,
+      userId,
+      address,
+      keystore,
     ]);
     res.json({ message: "지갑 저장 성공", address });
   } catch (e) {
@@ -119,7 +142,10 @@ app.post("/api/wallet/delete", async (req, res) => {
     if (!user) return res.status(401).json({ message: "인증 실패" });
     const ok = await bcrypt.compare(password, user.password_hash);
     if (!ok) return res.status(401).json({ message: "인증 실패" });
-    await pool.query("DELETE FROM wallets WHERE user_id=$1 AND address=$2", [userId, address]);
+    await pool.query("DELETE FROM wallets WHERE user_id=$1 AND address=$2", [
+      userId,
+      address,
+    ]);
     res.json({ message: "지갑 삭제 완료" });
   } catch (e) {
     console.error(e);
@@ -127,34 +153,36 @@ app.post("/api/wallet/delete", async (req, res) => {
   }
 });
 
-// --- Kaia 잔액 조회 프록시 ---
+// --- KAS 기반 잔액 조회 ---
 app.get("/api/balance/:address", async (req, res) => {
   try {
     const { address } = req.params;
-    const bal = await provider.getBalance(address);
-    res.json({ balance: ethers.formatEther(bal) });
+    const balance = await caver.rpc.klay.getBalance(address);
+    const kaia = caver.utils.fromPeb(balance, "KAIA");
+    res.json({ balance: kaia });
   } catch (e) {
     console.error("[잔액조회 실패]", e.message);
     res.status(500).json({ message: "잔액조회 실패", error: e.message });
   }
 });
 
-// --- 예시: Kaia 컨트랙트 호출 API ---
-app.post("/api/contract/setValue", async (req, res) => {
+// --- 상속지갑 컨트랙트 예시 호출 ---
+app.post("/api/contract/submit", async (req, res) => {
   try {
-    const { newValue } = req.body;
-    const tx = await contract.setValue(newValue);
-    await tx.wait();
+    const { to, value, data } = req.body;
+    const receipt = await contract.methods
+      .submit(to, value, data)
+      .send({ from: wallet.address, gas: 500000 });
     res.json({
       message: "트랜잭션 성공",
-      txHash: tx.hash,
-      explorer: `https://kaiascan.io/tx/${tx.hash}`,
+      txHash: receipt.transactionHash,
+      explorer: `https://kairos.kaiascan.io/tx/${receipt.transactionHash}`,
     });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ message: "컨트랙트 트랜잭션 실패", error: e.message });
+    res.status(500).json({ message: "컨트랙트 호출 실패", error: e.message });
   }
 });
 
-// --- Vercel용 핸들러 ---
+// --- Vercel 핸들러 ---
 module.exports = (req, res) => app(req, res);

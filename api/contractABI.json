@@ -1,16 +1,121 @@
 [
   {
-    "inputs": [{ "name": "newValue", "type": "uint256" }],
-    "name": "setValue",
+    "inputs": [
+      { "internalType": "address", "name": "_owner", "type": "address" },
+      { "internalType": "address", "name": "_heir", "type": "address" },
+      { "internalType": "address", "name": "_custodian", "type": "address" },
+      { "internalType": "address", "name": "_verifier", "type": "address" },
+      { "internalType": "bool", "name": "_heirSoloAfterTimelock", "type": "bool" },
+      { "internalType": "uint256", "name": "_timelockAfterDeath", "type": "uint256" }
+    ],
+    "stateMutability": "payable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "THRESHOLD",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  { "inputs": [], "name": "challengeDeadline", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "custodian", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "deathVerifier", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "heir", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "heirSoloAfterTimelock", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "lastDeathEvidence", "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "owner", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" },
+  {
+    "inputs": [{ "internalType": "address", "name": "a", "type": "address" }],
+    "name": "isKeyHolder",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }],
+    "name": "approvalsOf",
+    "outputs": [
+      { "internalType": "bool", "name": "o", "type": "bool" },
+      { "internalType": "bool", "name": "h", "type": "bool" },
+      { "internalType": "bool", "name": "c", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  { "inputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }], "name": "approvalsTotal", "outputs": [{ "internalType": "uint8", "name": "total", "type": "uint8" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "state", "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "timelockAfterDeath", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "to", "type": "address" },
+      { "internalType": "uint256", "name": "value", "type": "uint256" },
+      { "internalType": "bytes", "name": "data", "type": "bytes" }
+    ],
+    "name": "submit",
+    "outputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  { "inputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }], "name": "approve", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  { "inputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }], "name": "revoke", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  { "inputs": [{ "internalType": "uint256", "name": "id", "type": "uint256" }], "name": "execute", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "evidenceHash", "type": "bytes32" },
+      { "internalType": "uint256", "name": "challengePeriodSecs", "type": "uint256" }
+    ],
+    "name": "requestDeath",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
+  { "inputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }], "name": "challengeDeath", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  { "inputs": [], "name": "finalizeDeath", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  { "inputs": [{ "internalType": "address", "name": "newHeir", "type": "address" }], "name": "rotateHeir", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
   {
-    "inputs": [],
-    "name": "getValue",
-    "outputs": [{ "name": "", "type": "uint256" }],
+    "inputs": [
+      { "internalType": "bool", "name": "enabled", "type": "bool" },
+      { "internalType": "uint256", "name": "newTimelockSecs", "type": "uint256" }
+    ],
+    "name": "setHeirSoloAfterTimelock",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  { "inputs": [{ "internalType": "address", "name": "v", "type": "address" }], "name": "setDeathVerifier", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  { "inputs": [], "name": "txCount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "txs",
+    "outputs": [
+      { "internalType": "address", "name": "to", "type": "address" },
+      { "internalType": "uint256", "name": "value", "type": "uint256" },
+      { "internalType": "bytes", "name": "data", "type": "bytes" },
+      { "internalType": "bool", "name": "executed", "type": "bool" },
+      { "internalType": "uint256", "name": "eta", "type": "uint256" },
+      { "internalType": "uint8", "name": "approvalsBitmap", "type": "uint8" }
+    ],
     "stateMutability": "view",
     "type": "function"
-  }
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "uint256", "name": "txId", "type": "uint256" },
+      { "indexed": true, "internalType": "address", "name": "by", "type": "address" },
+      { "indexed": true, "internalType": "address", "name": "to", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" },
+      { "indexed": false, "internalType": "bytes", "name": "data", "type": "bytes" }
+    ],
+    "name": "Submitted",
+    "type": "event"
+  },
+  { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "txId", "type": "uint256" }, { "indexed": true, "internalType": "address", "name": "by", "type": "address" }], "name": "Approved", "type": "event" },
+  { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "txId", "type": "uint256" }, { "indexed": true, "internalType": "address", "name": "by", "type": "address" }], "name": "Revoked", "type": "event" },
+  { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "txId", "type": "uint256" }, { "indexed": false, "internalType": "bool", "name": "ok", "type": "bool" }, { "indexed": false, "internalType": "bytes", "name": "ret", "type": "bytes" }], "name": "Executed", "type": "event" },
+  { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "bytes32", "name": "evidenceHash", "type": "bytes32" }, { "indexed": false, "internalType": "uint256", "name": "challengeDeadline", "type": "uint256" }], "name": "DeathRequested", "type": "event" },
+  { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "by", "type": "address" }], "name": "DeathChallenged", "type": "event" },
+  { "anonymous": false, "inputs": [], "name": "DeathFinalized", "type": "event" },
+  { "anonymous": false, "inputs": [{ "indexed": false, "internalType": "uint8", "name": "from", "type": "uint8" }, { "indexed": false, "internalType": "uint8", "name": "to", "type": "uint8" }], "name": "StateChanged", "type": "event" }
 ]
