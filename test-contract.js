@@ -1,28 +1,45 @@
-import { ethers } from "ethers";
-import fs from "fs";
+const Caver = require("caver-js");
+require("dotenv").config();
+const contractABI = require("./api/contractABI.json");
 
-// Kaia Kairos (Testnet)
-const provider = new ethers.JsonRpcProvider("https://public-en-kairos.node.kaia.io", {
-  name: "kairos",
-  chainId: 1001
-});
+(async () => {
+  console.log("🟡 환경변수 확인 시작...");
+  console.log("RPC_URL:", process.env.RPC_URL);
+  console.log("ACCESS_KEY:", process.env.KAS_ACCESS_KEY_ID);
+  console.log("SECRET_KEY:", process.env.KAS_SECRET_ACCESS_KEY ? "(있음)" : "(없음)");
+  console.log("PRIVATE_KEY:", process.env.SERVER_PRIVATE_KEY ? "(있음)" : "(없음)");
+  console.log("CONTRACT_ADDRESS:", process.env.CONTRACT_ADDRESS);
+  console.log("------------------------------------");
 
-// 컨트랙트 주소 (네 배포 주소)
-const CONTRACT_ADDRESS = "0xc4039f1f1e6f0f3c1edd07b37a9e525ccd4b6e6c";
+  try {
+    console.log("🚀 Kaia Testnet 연결 테스트 중...");
 
-// ABI 파일 불러오기 (InheritanceWallet.sol을 Remix에서 compile하면 나오는 ABI)
-const abi = JSON.parse(fs.readFileSync("./contractABI.json", "utf8"));
+    const auth =
+      "Basic " +
+      Buffer.from(
+        process.env.KAS_ACCESS_KEY_ID + ":" + process.env.KAS_SECRET_ACCESS_KEY
+      ).toString("base64");
 
-// provider 연결
-const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, provider);
+    const caver = new Caver(
+      new Caver.providers.HttpProvider(process.env.RPC_URL, {
+        headers: [
+          { name: "Authorization", value: auth },
+          { name: "x-chain-id", value: "1001" },
+        ],
+      })
+    );
 
-async function main() {
-  console.log("🔍 Checking contract state...");
+    const wallet = caver.wallet.keyring.createFromPrivateKey(process.env.SERVER_PRIVATE_KEY);
+    caver.wallet.add(wallet);
 
-  const owner = await contract.owner();
-  const state = await contract.state();
-  console.log("✅ Owner:", owner);
-  console.log("✅ State:", state.toString());
-}
+    const contract = new caver.contract(contractABI, process.env.CONTRACT_ADDRESS);
 
-main().catch(console.error);
+    const blockNumber = await caver.rpc.klay.getBlockNumber();
+    console.log(`✅ 연결 성공! 현재 블록번호: ${blockNumber}`);
+    console.log("✅ 컨트랙트 주소:", contract._address);
+    console.log("✅ 지갑 주소:", wallet.address);
+    console.log("함수 목록:", Object.keys(contract.methods));
+  } catch (err) {
+    console.error("❌ 에러 발생:", err);
+  }
+})();
