@@ -27,6 +27,9 @@ window.App = window.App || {};
     const walletListOutgoing = $('wallet-list-outgoing');
     const emptyState = $('empty-state');
 
+    // 🔔 Ping 출석 체크 버튼 요소
+    const pingTestBtn = $('pingTestBtn');
+
     const VIEWS = [loginView, signupView, dashView];
 
     function getUserId() { return window._userId || null; }
@@ -145,6 +148,13 @@ window.App = window.App || {};
     });
     emptyCreateBtn.addEventListener('click', doCreateWalletFlow);
     listCreateBtn.addEventListener('click', doCreateWalletFlow);
+
+    // 🔔 Ping 출석 체크 버튼 클릭 시
+    if (pingTestBtn) {
+      pingTestBtn.addEventListener('click', () => {
+        alert("출석 체크 완료!");
+      });
+    }
 
     // 로그아웃
     logoutBtn.addEventListener('click', () => {
