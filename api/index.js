@@ -54,7 +54,8 @@ app.get("/api/balance/:address", chain.getBalance);
 // ----------------------------------------
 // Contract
 app.post("/api/contract/submit", contractCtrl.submitTx);
-
+//send
+app.use("/api", require("./routes/send"));
 // ----------------------------------------
 // Vercel Serverless Handler
 module.exports = (req, res) => app(req, res);
