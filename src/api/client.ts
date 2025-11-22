@@ -4,7 +4,7 @@
 // 🚀 Railway Backend Base URL
 // ==============================
 export const BASE_URL =
-  "https://sanmantec-backend-production.up.railway.app/api";
+  'https://sanmantec-backend-production.up.railway.app/api';
 
 // ==============================
 // 🌐 공용 fetch 래퍼
@@ -13,7 +13,7 @@ export async function api(path: string, options: RequestInit = {}) {
   try {
     const res = await fetch(`${BASE_URL}${path}`, {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         ...(options.headers || {}),
       },
       ...options,
@@ -22,12 +22,12 @@ export async function api(path: string, options: RequestInit = {}) {
     if (!res.ok) {
       console.error(`❌ API Error: ${res.status} ${res.statusText}`);
       let errText = await res.text().catch(() => null);
-      throw new Error(errText || "API 요청 실패");
+      throw new Error(errText || 'API 요청 실패');
     }
 
     return res.json();
   } catch (err) {
-    console.error("❌ Fetch Error:", err);
+    console.error('❌ Fetch Error:', err);
     throw err;
   }
 }
@@ -38,16 +38,16 @@ export async function api(path: string, options: RequestInit = {}) {
 
 // 회원가입
 export function register(email: string, password: string) {
-  return api("/auth/register", {
-    method: "POST",
+  return api('/auth/register', {
+    method: 'POST',
     body: JSON.stringify({ email, password }),
   });
 }
 
 // 로그인
 export function login(email: string, password: string) {
-  return api("/auth/login", {
-    method: "POST",
+  return api('/auth/login', {
+    method: 'POST',
     body: JSON.stringify({ email, password }),
   });
 }
@@ -56,10 +56,10 @@ export function login(email: string, password: string) {
       WALLET APIs
 ============================ */
 
-// 지갑 잔액 조회 (백엔드에 실제 라우트 없으면 제거해야 함!)
+// 지갑 잔액 조회
 export function getBalance(address: string) {
   return api(`/wallet/balance/${address}`, {
-    method: "GET",
+    method: 'GET',
   });
 }
 
@@ -67,11 +67,12 @@ export function getBalance(address: string) {
       SEND KAIA APIs
 ============================ */
 
-// 카이아 전송 — 백엔드 경로 정확히 맞춤
-export function sendKaia(from: string, to: string, amount: string) {
-  return api("/send/kaia", {
-    method: "POST",
-    body: JSON.stringify({ from, to, amount }),
+// 🔥 백엔드 명세에 맞게 정확하게 수정!
+// 백엔드에서는 from을 받지 않음.
+export function sendKaia(to: string, amount: string) {
+  return api('/send/sendKaia', {
+    method: 'POST',
+    body: JSON.stringify({ to, amount }),
   });
 }
 
@@ -80,25 +81,22 @@ export function sendKaia(from: string, to: string, amount: string) {
 ============================ */
 
 export function getBlockNumber() {
-  return api("/chain/blockNumber", { method: "GET" });
+  return api('/chain/blockNumber', { method: 'GET' });
 }
 
 /* ============================
       CONTRACT APIs
 ============================ */
 
-// 컨트랙트 서류 제출
-export function submitContract(data: any) {
-  return api("/contract/submit", {
-    method: "POST",
-    body: JSON.stringify(data),
+// 컨트랙트 함수 호출
+// 백엔드 명세: { functionName, params: [] }
+export function submitContract(functionName: string, params: any[]) {
+  return api('/contract/submit', {
+    method: 'POST',
+    body: JSON.stringify({ functionName, params }),
   });
 }
 
-// 서류 승인(필요 시)
-export function approveContract(data: any) {
-  return api("/contract/approve", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-}
+/*  ⚠️ 삭제된 API (백엔드에 없음!)
+    approveContract 제거
+*/

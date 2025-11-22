@@ -9,10 +9,10 @@ import CreateVault from './components/vault/CreateVault';
 import SubmitDeathCertificate from './components/vault/SubmitDeathCertificate';
 import UnlockAndWithdraw from './components/vault/UnlockAndWithdraw';
 
-export type Screen = 
-  | 'signup' 
-  | 'email-verification' 
-  | 'login' 
+export type Screen =
+  | 'signup'
+  | 'email-verification'
+  | 'login'
   | 'connect-wallet'
   | 'dashboard'
   | 'vault-detail'
@@ -24,6 +24,7 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('login');
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [userEmail, setUserEmail] = useState('');
+  const [walletAddress, setWalletAddress] = useState<string | null>(null); // ⭐ 지갑 주소 저장
 
   const navigate = (screen: Screen) => {
     setCurrentScreen(screen);
@@ -38,16 +39,17 @@ export default function App() {
     }
   };
 
-  const handleWalletConnect = () => {
+  // ⭐ 지갑 주소를 전달받는 함수로 변경
+  const handleWalletConnect = (address: string) => {
+    setWalletAddress(address);
     setIsWalletConnected(true);
+    console.log('💙 Connected Wallet:', address);
     navigate('dashboard');
   };
 
   return (
     <div className="min-h-screen bg-white">
-      {currentScreen === 'signup' && (
-        <SignUp onNavigate={navigate} />
-      )}
+      {currentScreen === 'signup' && <SignUp onNavigate={navigate} />}
       {currentScreen === 'email-verification' && (
         <EmailVerification onNavigate={navigate} />
       )}
@@ -58,9 +60,10 @@ export default function App() {
         <ConnectWallet onConnect={handleWalletConnect} />
       )}
       {currentScreen === 'dashboard' && (
-        <Dashboard 
+        <Dashboard
           userEmail={userEmail}
           isWalletConnected={isWalletConnected}
+          walletAddress={walletAddress} // ⭐ Dashboard로 지갑 주소 전달
           onNavigate={navigate}
           onWalletConnect={handleWalletConnect}
         />
@@ -69,7 +72,10 @@ export default function App() {
         <VaultDetail onNavigate={navigate} />
       )}
       {currentScreen === 'create-vault' && (
-        <CreateVault onNavigate={navigate} isWalletConnected={isWalletConnected} />
+        <CreateVault
+          onNavigate={navigate}
+          isWalletConnected={isWalletConnected}
+        />
       )}
       {currentScreen === 'submit-death-certificate' && (
         <SubmitDeathCertificate onNavigate={navigate} />
