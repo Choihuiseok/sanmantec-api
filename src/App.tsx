@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import SignUp from './components/auth/SignUp';
-import EmailVerification from './components/auth/EmailVerification';
-import Login from './components/auth/Login';
-import ConnectWallet from './components/auth/ConnectWallet';
-import Dashboard from './components/dashboard/Dashboard';
-import VaultDetail from './components/vault/VaultDetail';
-import CreateVault from './components/vault/CreateVault';
-import SubmitDeathCertificate from './components/vault/SubmitDeathCertificate.tsx';
-import UnlockAndWithdraw from './components/vault/UnlockAndWithdraw';
+
+import SignUp from '@/components/auth/SignUp';
+import EmailVerification from '@/components/auth/EmailVerification';
+import Login from '@/components/auth/Login';
+import ConnectWallet from '@/components/auth/ConnectWallet';
+
+import Dashboard from '@/components/dashboard/Dashboard';
+
+import VaultDetail from '@/components/vault/VaultDetail';
+import CreateVault from '@/components/vault/CreateVault';
+import SubmitDeathCertificate from '@/components/vault/SubmitDeathCertificate';
+import UnlockAndWithdraw from '@/components/vault/UnlockAndWithdraw';
 
 export type Screen =
   | 'signup'
@@ -26,24 +29,21 @@ export default function App() {
   const [userEmail, setUserEmail] = useState('');
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
-  const navigate = (screen: Screen) => {
-    setCurrentScreen(screen);
-  };
+  const navigate = (screen: Screen) => setCurrentScreen(screen);
 
+  /* 로그인 처리 */
   const handleLogin = (email: string) => {
     setUserEmail(email);
-    if (isWalletConnected) {
-      navigate('dashboard');
-    } else {
-      navigate('connect-wallet');
-    }
+    if (isWalletConnected) navigate('dashboard');
+    else navigate('connect-wallet');
   };
 
-  // ⭐ ConnectWallet 컴포넌트가 address를 넘겨주면 저장
+  /* 지갑 연결 처리 */
   const handleWalletConnect = (address: string) => {
     setWalletAddress(address);
     setIsWalletConnected(true);
-    console.log('🔵 Wallet Connected:', address);
+    console.log('지갑 연결됨:', address);
+
     navigate('dashboard');
   };
 
@@ -69,7 +69,7 @@ export default function App() {
           isWalletConnected={isWalletConnected}
           walletAddress={walletAddress}
           onNavigate={navigate}
-          onWalletConnect={handleWalletConnect}
+          onWalletConnect={() => navigate('connect-wallet')}
         />
       )}
 

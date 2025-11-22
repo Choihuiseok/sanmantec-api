@@ -1,11 +1,26 @@
 {
   "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "jsx": "react-jsx",
+    "noFallthroughCasesInSwitch": true,
+    "allowImportingTsExtensions": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+
+    /* ⚡ 중요: 절대경로 alias */
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     }
   },
-  "files": [],
+  "include": ["src"],
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }

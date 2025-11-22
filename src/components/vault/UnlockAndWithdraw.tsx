@@ -5,12 +5,13 @@ import {
   CardFooter,
   CardTitle,
   CardDescription,
-} from '../ui/card';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
+} from '@/components/ui/card';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 import { ArrowLeft, Wallet as WalletIcon } from 'lucide-react';
-import type { Screen } from '../../../App';
+import type { Screen } from '@/App';
 
 interface UnlockProps {
   onNavigate: (screen: Screen) => void;

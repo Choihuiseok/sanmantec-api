@@ -5,14 +5,14 @@ import {
   CardFooter,
   CardTitle,
   CardDescription,
-} from '../ui/card';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
+} from '@/components/ui/card';
 
-import { Label } from '../ui/label';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 import { ArrowLeft, UploadCloud } from 'lucide-react';
-import type { Screen } from '../../App';
+import type { Screen } from '@/App';
 
 interface SubmitDeathCertificateProps {
   onNavigate: (screen: Screen) => void;
@@ -34,14 +34,14 @@ export default function SubmitDeathCertificate({
             돌아가기
           </Button>
 
-          <CardTitle className="text-lg">사망 증명서 제출</CardTitle>
+          <CardTitle>사망 증명서 제출</CardTitle>
           <CardDescription>
             금고 검증을 위해 사망 증명서를 업로드해주세요.
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* -------------------- 파일 업로드 -------------------- */}
+          {/* 파일 업로드 */}
           <section>
             <h2 className="text-sm font-semibold mb-2">증명서 파일 업로드</h2>
 
@@ -52,7 +52,7 @@ export default function SubmitDeathCertificate({
             </label>
           </section>
 
-          {/* -------------------- 제출자 정보 -------------------- */}
+          {/* 제출자 정보 */}
           <section>
             <h2 className="text-sm font-semibold mb-2">제출자 정보</h2>
 

@@ -1,22 +1,24 @@
 import {
   Card,
   CardHeader,
-  CardTitle,
   CardDescription,
   CardContent,
   CardFooter,
-} from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { ArrowLeft, Wallet, FileText, ShieldCheck, Coins } from 'lucide-react';
-import type { Screen } from '../../App';
+  CardTitle,
+} from '@/components/ui/card';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+
+import { ArrowLeft, ShieldCheck, Coins, FileText, Wallet } from 'lucide-react';
+
+import type { Screen } from '@/App';
 
 interface VaultDetailProps {
   onNavigate: (screen: Screen) => void;
 }
 
 export default function VaultDetail({ onNavigate }: VaultDetailProps) {
-  // 실제 데이터는 나중에 백엔드 연동
   const vault = {
     id: '12',
     status: 'Ready',
@@ -31,7 +33,7 @@ export default function VaultDetail({ onNavigate }: VaultDetailProps) {
       ],
       nftCount: 2,
     },
-    progress: 3, // 1~5 단계
+    progress: 3,
   };
 
   const progressLabels = [
@@ -48,22 +50,22 @@ export default function VaultDetail({ onNavigate }: VaultDetailProps) {
         <CardHeader>
           <Button
             variant="ghost"
-            className="flex items-center gap-2 mb-2"
+            className="flex items-center gap-2 mb-3"
             onClick={() => onNavigate('dashboard')}
           >
             <ArrowLeft className="w-4 h-4" />
             돌아가기
           </Button>
 
-          <CardTitle className="text-xl">금고 상세보기 #{vault.id}</CardTitle>
-          <CardDescription className="mt-2">
-            금고의 상태 및 상속 진행 상황을 확인하세요.
+          <CardTitle>금고 상세 정보 #{vault.id}</CardTitle>
+          <CardDescription>
+            금고 상태 및 상속 진행 상황을 확인하세요
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-8">
-          {/* -------------------- 금고 상태 -------------------- */}
-          <section>
+          {/* 금고 상태 */}
+          <div>
             <h2 className="text-lg font-semibold mb-2">금고 상태</h2>
 
             <Badge
@@ -81,13 +83,13 @@ export default function VaultDetail({ onNavigate }: VaultDetailProps) {
                 ? '대기중'
                 : '완료'}
             </Badge>
-          </section>
+          </div>
 
-          {/* -------------------- 금고 정보 -------------------- */}
-          <section>
-            <h2 className="text-lg font-semibold mb-2">금고 정보</h2>
+          {/* 금고 정보 */}
+          <div>
+            <h2 className="text-lg font-semibold mb-2">기본 정보</h2>
 
-            <div className="space-y-3 text-sm bg-white p-4 rounded-md border">
+            <div className="border rounded-md p-4 bg-white space-y-2 text-sm">
               <p>
                 <strong className="text-gray-500">네트워크:</strong>{' '}
                 {vault.network}
@@ -100,14 +102,13 @@ export default function VaultDetail({ onNavigate }: VaultDetailProps) {
                 <strong className="text-gray-500">상속인:</strong> {vault.heir}
               </p>
               <p>
-                <strong className="text-gray-500">대리인:</strong>{' '}
-                {vault.agent || '미지정'}
+                <strong className="text-gray-500">대리인:</strong> {vault.agent}
               </p>
             </div>
-          </section>
+          </div>
 
-          {/* -------------------- 상속 진행 단계 -------------------- */}
-          <section>
+          {/* 진행도 */}
+          <div>
             <h2 className="text-lg font-semibold mb-3">상속 진행 상황</h2>
 
             <div className="space-y-3">
@@ -128,30 +129,33 @@ export default function VaultDetail({ onNavigate }: VaultDetailProps) {
                 );
               })}
             </div>
-          </section>
+          </div>
 
-          {/* -------------------- 자산 -------------------- */}
-          <section>
+          {/* 금고 자산 */}
+          <div>
             <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
-              <Coins className="w-5 h-5" /> 금고 자산
+              <Coins className="w-5 h-5" />
+              금고 보유 자산
             </h2>
 
-            <div className="space-y-4 p-4 bg-white border rounded-md">
-              <div className="space-y-2">
+            <div className="border rounded-md p-4 bg-white space-y-3 text-sm">
+              {/* 토큰 */}
+              <div>
                 <p className="font-medium text-gray-700">토큰</p>
-                {vault.assets.tokens.map((token, idx) => (
-                  <p key={idx} className="text-sm">
+                {vault.assets.tokens.map((token, index) => (
+                  <p key={index}>
                     • {token.symbol}: {token.amount}
                   </p>
                 ))}
               </div>
 
+              {/* NFT */}
               <div>
                 <p className="font-medium text-gray-700">NFT 보유량</p>
-                <p className="text-sm">• {vault.assets.nftCount}개</p>
+                <p>• {vault.assets.nftCount}개</p>
               </div>
             </div>
-          </section>
+          </div>
         </CardContent>
 
         <CardFooter className="flex justify-between">
@@ -159,14 +163,16 @@ export default function VaultDetail({ onNavigate }: VaultDetailProps) {
             variant="outline"
             onClick={() => onNavigate('submit-death-certificate')}
           >
-            <FileText className="w-4 h-4 mr-2" /> 서류 제출
+            <FileText className="w-4 h-4 mr-2" />
+            서류 제출
           </Button>
 
           <Button
             className="bg-blue-600 hover:bg-blue-700"
             onClick={() => onNavigate('unlock-withdraw')}
           >
-            <Wallet className="w-4 h-4 mr-2" /> 자산 인출 진행
+            <Wallet className="w-4 h-4 mr-2" />
+            자산 인출
           </Button>
         </CardFooter>
       </Card>

@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
+
 import {
   Card,
   CardHeader,
-  CardTitle,
   CardDescription,
   CardContent,
   CardFooter,
-} from '../ui/card';
+  CardTitle,
+} from '@/components/ui/card';
+
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 import {
   Bell,
@@ -23,7 +25,7 @@ import {
   HelpCircle,
 } from 'lucide-react';
 
-import type { Screen } from '../../App';
+import type { Screen } from '@/App';
 
 interface DashboardProps {
   userEmail: string;
@@ -62,7 +64,6 @@ export default function Dashboard({
 }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<WalletTab>('all');
 
-  // 📌 실제 연결된 지갑을 리스트에 추가
   const wallets: WalletData[] = [
     {
       id: 'connected',
@@ -71,14 +72,6 @@ export default function Dashboard({
       network: 'Kaia Kairos',
       role: 'Owner',
       connected: isWalletConnected,
-    },
-    {
-      id: '2',
-      nickname: '예비 지갑',
-      address: '0x1234...abcd',
-      network: 'Ethereum',
-      role: 'Normal',
-      connected: false,
     },
   ];
 
@@ -115,7 +108,6 @@ export default function Dashboard({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ---------------- 헤더 ---------------- */}
       <header className="bg-white border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -128,7 +120,7 @@ export default function Dashboard({
           <div className="flex items-center gap-4">
             <div className="text-sm text-right">
               <div className="text-muted-foreground">사용자</div>
-              <div>{userEmail || 'user@example.com'}</div>
+              <div>{userEmail}</div>
             </div>
 
             {isWalletConnected ? (
@@ -151,10 +143,9 @@ export default function Dashboard({
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* ---------------- 메인 컨텐츠 ---------------- */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
         <div className="lg:col-span-2 space-y-6">
-          {/* ----- 내 지갑 ----- */}
+          {/* 내 지갑 */}
           <Card>
             <CardHeader>
               <CardTitle>내 지갑</CardTitle>
@@ -162,7 +153,6 @@ export default function Dashboard({
             </CardHeader>
 
             <CardContent className="space-y-4">
-              {/* Tabs */}
               <div className="flex gap-2 border-b">
                 {['all', 'owner', 'heir', 'normal'].map(tab => (
                   <button
@@ -180,13 +170,13 @@ export default function Dashboard({
                         owner: '소유자',
                         heir: '상속인',
                         normal: '일반',
-                      }[tab]
+                      }[tab as WalletTab]
                     }
                   </button>
                 ))}
               </div>
 
-              {/* Wallet List */}
+              {/* 지갑 리스트 */}
               <div className="space-y-3">
                 {filteredWallets.map(wallet => (
                   <div
@@ -194,12 +184,11 @@ export default function Dashboard({
                     className="p-4 border rounded-lg bg-white shadow-sm"
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
                           <span>{wallet.nickname}</span>
                           <Badge>{wallet.role}</Badge>
                         </div>
-
                         <div className="text-sm flex items-center gap-2">
                           <code className="text-xs">{wallet.address}</code>
                           <button
@@ -209,7 +198,8 @@ export default function Dashboard({
                             <Copy className="w-3 h-3" />
                           </button>
                         </div>
-                        <div className="text-xs text-muted-foreground mt-1">
+
+                        <div className="text-xs text-muted-foreground">
                           네트워크: {wallet.network}
                         </div>
                       </div>
@@ -240,7 +230,7 @@ export default function Dashboard({
             </CardContent>
           </Card>
 
-          {/* ----- 소유 금고 ----- */}
+          {/* 소유 금고 */}
           <Card>
             <CardHeader className="flex justify-between">
               <div>
@@ -248,57 +238,50 @@ export default function Dashboard({
                 <CardDescription>내가 소유한 금고</CardDescription>
               </div>
 
-              <Button
-                className="bg-blue-600 hover:bg-blue-700"
-                onClick={() => onNavigate('create-vault')}
-              >
-                <Plus className="w-4 h-4 mr-2" /> 금고 생성
+              <Button onClick={() => onNavigate('create-vault')}>
+                <Plus className="w-4 h-4 mr-1" /> 금고 생성
               </Button>
             </CardHeader>
 
             <CardContent>
-              <div className="space-y-3">
-                {ownerVaults.map(vault => (
-                  <div
-                    key={vault.id}
-                    className="p-4 border rounded bg-white shadow-sm"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span>금고 #{vault.id}</span>
-                          <Badge>{vault.state}</Badge>
-                        </div>
+              {ownerVaults.map(vault => (
+                <div
+                  key={vault.id}
+                  className="p-4 border rounded bg-white shadow-sm"
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span>금고 #{vault.id}</span>
+                        <Badge>{vault.state}</Badge>
+                      </div>
 
-                        <div className="grid grid-cols-2 gap-2 text-sm">
-                          <div>
-                            소유자: <code>{vault.ownerWallet}</code>
-                          </div>
-                          <div>상속인: {vault.heirName}</div>
-                          <div>대리인: {vault.agent}</div>
-                          <div>
-                            유언장:{' '}
-                            <Badge variant="outline">{vault.willStatus}</Badge>
-                          </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>소유자: {vault.ownerWallet}</div>
+                        <div>상속인: {vault.heirName}</div>
+                        <div>대리인: {vault.agent}</div>
+                        <div>
+                          유언장:{' '}
+                          <Badge variant="outline">{vault.willStatus}</Badge>
                         </div>
                       </div>
                     </div>
-
-                    <Button
-                      onClick={() => onNavigate('vault-detail')}
-                      size="sm"
-                      variant="outline"
-                      className="mt-3"
-                    >
-                      <Eye className="w-3 h-3 mr-1" /> 상세보기
-                    </Button>
                   </div>
-                ))}
-              </div>
+
+                  <Button
+                    onClick={() => onNavigate('vault-detail')}
+                    size="sm"
+                    variant="outline"
+                    className="mt-3"
+                  >
+                    <Eye className="w-3 h-3 mr-1" /> 상세보기
+                  </Button>
+                </div>
+              ))}
             </CardContent>
           </Card>
 
-          {/* ----- 상속받는 금고 ----- */}
+          {/* 상속받는 금고 */}
           <Card>
             <CardHeader>
               <CardTitle>상속인으로 지정된 금고</CardTitle>
@@ -306,60 +289,51 @@ export default function Dashboard({
             </CardHeader>
 
             <CardContent>
-              <div className="space-y-3">
-                {heirVaults.map(vault => (
-                  <div
-                    key={vault.id}
-                    className="p-4 border rounded bg-white shadow-sm"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span>금고 #{vault.id}</span>
-                          <Badge variant="secondary">{vault.state}</Badge>
-                        </div>
+              {heirVaults.map(vault => (
+                <div key={vault.id} className="p-4 border rounded bg-white">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span>금고 #{vault.id}</span>
+                        <Badge variant="secondary">{vault.state}</Badge>
+                      </div>
 
-                        <div className="grid grid-cols-2 gap-2 text-sm">
-                          <div>
-                            소유자: <code>{vault.ownerWallet}</code>
-                          </div>
-                          <div>대리인: {vault.agent}</div>
-                          <div className="col-span-2">
-                            유언장:{' '}
-                            <Badge variant="outline">{vault.willStatus}</Badge>
-                          </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>소유자: {vault.ownerWallet}</div>
+                        <div>대리인: {vault.agent}</div>
+                        <div className="col-span-2">
+                          유언장:{' '}
+                          <Badge variant="outline">{vault.willStatus}</Badge>
                         </div>
                       </div>
                     </div>
-
-                    <div className="flex gap-2 mt-3">
-                      <Button
-                        onClick={() => onNavigate('vault-detail')}
-                        size="sm"
-                        variant="outline"
-                      >
-                        <Eye className="w-3 h-3 mr-1" /> 상세보기
-                      </Button>
-
-                      <Button
-                        onClick={() => onNavigate('submit-death-certificate')}
-                        size="sm"
-                        variant="outline"
-                        className="text-blue-600"
-                      >
-                        서류 제출
-                      </Button>
-                    </div>
                   </div>
-                ))}
-              </div>
+
+                  <div className="flex gap-2 mt-3">
+                    <Button
+                      onClick={() => onNavigate('vault-detail')}
+                      size="sm"
+                      variant="outline"
+                    >
+                      <Eye className="w-3 h-3 mr-1" /> 상세보기
+                    </Button>
+
+                    <Button
+                      onClick={() => onNavigate('submit-death-certificate')}
+                      size="sm"
+                      variant="outline"
+                    >
+                      서류 제출
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </CardContent>
           </Card>
         </div>
 
-        {/* ---------------- 오른쪽 사이드바 ---------------- */}
+        {/* 오른쪽 사이드 */}
         <div className="space-y-4">
-          {/* 알림 */}
           <Card className="bg-blue-50 border-blue-200">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-blue-900">
@@ -367,7 +341,7 @@ export default function Dashboard({
                 상속 진행 알림
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm text-blue-900">
+            <CardContent className="space-y-2 text-blue-900 text-sm">
               <div className="p-2 bg-white rounded">
                 금고 #5: 서류 검증 대기중
               </div>
@@ -375,7 +349,6 @@ export default function Dashboard({
             </CardContent>
           </Card>
 
-          {/* 유언장 가이드 */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -388,12 +361,11 @@ export default function Dashboard({
                 유언장을 업로드하고 검증하는 방법을 안내합니다.
               </p>
               <Button variant="outline" size="sm" className="w-full">
-                가이드 읽기
+                가이드 보기
               </Button>
             </CardContent>
           </Card>
 
-          {/* 상속세 안내 */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -411,7 +383,6 @@ export default function Dashboard({
             </CardContent>
           </Card>
 
-          {/* 고객센터 */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
