@@ -8,9 +8,9 @@ import ConnectWallet from '@/components/auth/ConnectWallet';
 import Dashboard from '@/components/dashboard/Dashboard';
 
 import VaultDetail from '@/components/vault/VaultDetail';
-import CreateVault from './components/vault/CreateVault';
-import SubmitDeathCertificate from './components/vault/SubmitDeathCertificate';
-import UnlockAndWithdraw from './components/vault/UnlockAndWithdraw';
+import CreateVault from '@/components/vault/CreateVault';
+import SubmitDeathCertificate from '@/components/vault/SubmitDeathCertificate';
+import UnlockAndWithdraw from '@/components/vault/UnlockAndWithdraw';
 
 export type Screen =
   | 'signup'
