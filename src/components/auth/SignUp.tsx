@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from '../ui/card';
 
-import { register as registerApi } from '../../api/client'; // ⭐ API 연결 추가
+import { register as registerApi } from '../../api/client';
 import type { Screen } from '../../App';
 
 interface SignUpProps {
@@ -38,8 +38,7 @@ export default function SignUp({ onNavigate }: SignUpProps) {
     setLoading(true);
 
     try {
-      const res = await registerApi(email, password); // ⭐ 백엔드 호출
-      console.log('📌 Register Response:', res);
+      const res = await registerApi(email, password);
 
       if (res?.success === false) {
         setErrorMsg(res.message || '회원가입 실패');
@@ -47,10 +46,8 @@ export default function SignUp({ onNavigate }: SignUpProps) {
         return;
       }
 
-      // 회원가입 성공 → 이메일 인증 화면으로 이동
       onNavigate('email-verification');
-    } catch (err: any) {
-      console.error(err);
+    } catch (err) {
       setErrorMsg('회원가입 중 오류가 발생했습니다.');
     }
 
@@ -60,26 +57,32 @@ export default function SignUp({ onNavigate }: SignUpProps) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white p-4">
       <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="space-y-1">
-          <div className="flex items-center justify-center mb-4">
+        {/* Header */}
+        <CardHeader className="space-y-2">
+          <div className="flex items-center justify-center mb-2">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white">S</span>
+              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+                <span className="text-white font-medium">S</span>
               </div>
-              <span className="text-blue-600">Sanmantec</span>
+              <span className="text-blue-600 font-medium text-lg">
+                Sanmantec
+              </span>
             </div>
           </div>
-          <CardTitle className="text-center">계정 만들기</CardTitle>
+
+          <CardTitle className="text-center text-xl">계정 만들기</CardTitle>
           <CardDescription className="text-center">
             Web3 상속 서비스로 디지털 자산을 안전하게 보호하세요
           </CardDescription>
         </CardHeader>
 
+        {/* Content */}
         <CardContent>
           <form onSubmit={handleSignUp} className="space-y-4">
-            {/* 오류 메시지 */}
             {errorMsg && (
-              <div className="text-red-500 text-sm text-center">{errorMsg}</div>
+              <div className="text-red-500 text-sm text-center font-medium">
+                {errorMsg}
+              </div>
             )}
 
             <div className="space-y-2">
@@ -120,7 +123,7 @@ export default function SignUp({ onNavigate }: SignUpProps) {
 
             <Button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700"
+              className="w-full bg-blue-600 hover:bg-blue-700 transition"
               disabled={loading}
             >
               {loading ? '회원가입 중...' : '회원가입'}
@@ -128,15 +131,17 @@ export default function SignUp({ onNavigate }: SignUpProps) {
           </form>
         </CardContent>
 
+        {/* Footer */}
         <CardFooter className="flex flex-col space-y-4">
           <p className="text-sm text-center text-muted-foreground">
             상속 금고를 생성하려면 이메일 인증이 필요합니다.
           </p>
+
           <div className="text-sm text-center">
             이미 계정이 있으신가요?{' '}
             <button
               onClick={() => onNavigate('login')}
-              className="text-blue-600 hover:underline"
+              className="text-blue-600 hover:underline font-medium"
             >
               로그인
             </button>

@@ -24,7 +24,7 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('login');
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [userEmail, setUserEmail] = useState('');
-  const [walletAddress, setWalletAddress] = useState<string | null>(null); // ⭐ 지갑 주소 저장
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
   const navigate = (screen: Screen) => {
     setCurrentScreen(screen);
@@ -39,47 +39,55 @@ export default function App() {
     }
   };
 
-  // ⭐ 지갑 주소를 전달받는 함수로 변경
+  // ⭐ ConnectWallet 컴포넌트가 address를 넘겨주면 저장
   const handleWalletConnect = (address: string) => {
     setWalletAddress(address);
     setIsWalletConnected(true);
-    console.log('💙 Connected Wallet:', address);
+    console.log('🔵 Wallet Connected:', address);
     navigate('dashboard');
   };
 
   return (
     <div className="min-h-screen bg-white">
       {currentScreen === 'signup' && <SignUp onNavigate={navigate} />}
+
       {currentScreen === 'email-verification' && (
         <EmailVerification onNavigate={navigate} />
       )}
+
       {currentScreen === 'login' && (
         <Login onNavigate={navigate} onLogin={handleLogin} />
       )}
+
       {currentScreen === 'connect-wallet' && (
         <ConnectWallet onConnect={handleWalletConnect} />
       )}
+
       {currentScreen === 'dashboard' && (
         <Dashboard
           userEmail={userEmail}
           isWalletConnected={isWalletConnected}
-          walletAddress={walletAddress} // ⭐ Dashboard로 지갑 주소 전달
+          walletAddress={walletAddress}
           onNavigate={navigate}
           onWalletConnect={handleWalletConnect}
         />
       )}
+
       {currentScreen === 'vault-detail' && (
         <VaultDetail onNavigate={navigate} />
       )}
+
       {currentScreen === 'create-vault' && (
         <CreateVault
           onNavigate={navigate}
           isWalletConnected={isWalletConnected}
         />
       )}
+
       {currentScreen === 'submit-death-certificate' && (
         <SubmitDeathCertificate onNavigate={navigate} />
       )}
+
       {currentScreen === 'unlock-withdraw' && (
         <UnlockAndWithdraw onNavigate={navigate} />
       )}
