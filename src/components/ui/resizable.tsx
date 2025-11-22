@@ -1,11 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { GripVerticalIcon } from "lucide-react@0.487.0";
-import * as ResizablePrimitive from "react-resizable-panels@2.1.7";
+import { GripVerticalIcon } from "lucide-react";
+import * as ResizablePrimitive from "react-resizable-panels";
 
 import { cn } from "./utils";
 
+// ============================================================================
+// PANEL GROUP
+// ============================================================================
 function ResizablePanelGroup({
   className,
   ...props
@@ -13,21 +16,31 @@ function ResizablePanelGroup({
   return (
     <ResizablePrimitive.PanelGroup
       data-slot="resizable-panel-group"
-      className={cn(
-        "flex h-full w-full data-[panel-group-direction=vertical]:flex-col",
-        className,
-      )}
+      className={cn("flex w-full h-full", className)}
       {...props}
     />
   );
 }
 
+// ============================================================================
+// PANEL
+// ============================================================================
 function ResizablePanel({
+  className,
   ...props
 }: React.ComponentProps<typeof ResizablePrimitive.Panel>) {
-  return <ResizablePrimitive.Panel data-slot="resizable-panel" {...props} />;
+  return (
+    <ResizablePrimitive.Panel
+      data-slot="resizable-panel"
+      className={cn("flex", className)}
+      {...props}
+    />
+  );
 }
 
+// ============================================================================
+// HANDLE
+// ============================================================================
 function ResizableHandle({
   withHandle,
   className,
@@ -37,15 +50,25 @@ function ResizableHandle({
 }) {
   return (
     <ResizablePrimitive.PanelResizeHandle
-      data-slot="resizable-handle"
+      data-slot="resizable-panel-handle"
       className={cn(
-        "bg-border focus-visible:ring-ring relative flex w-px items-center justify-center after:absolute after:inset-y-0 after:left-1/2 after:w-1 after:-translate-x-1/2 focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:outline-hidden data-[panel-group-direction=vertical]:h-px data-[panel-group-direction=vertical]:w-full data-[panel-group-direction=vertical]:after:left-0 data-[panel-group-direction=vertical]:after:h-1 data-[panel-group-direction=vertical]:after:w-full data-[panel-group-direction=vertical]:after:-translate-y-1/2 data-[panel-group-direction=vertical]:after:translate-x-0 [&[data-panel-group-direction=vertical]>div]:rotate-90",
-        className,
+        "group relative flex items-center justify-center bg-border transition-all",
+        // 기본 크기
+        "data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full",
+        "data-[orientation=vertical]:w-px data-[orientation=vertical]:h-full",
+        // hover 효과
+        "data-[orientation=horizontal]:hover:h-1 data-[orientation=vertical]:hover:w-1",
+        // dragging 상태
+        "data-[state=dragging]:bg-primary",
+        className
       )}
       {...props}
     >
       {withHandle && (
-        <div className="bg-border z-10 flex h-4 w-3 items-center justify-center rounded-xs border">
+        <div
+          data-slot="resizable-panel-handle-icon"
+          className="z-10 flex h-4 w-3 items-center justify-center rounded-xs border bg-border"
+        >
           <GripVerticalIcon className="size-2.5" />
         </div>
       )}
@@ -53,4 +76,7 @@ function ResizableHandle({
   );
 }
 
+// ============================================================================
+// EXPORT
+// ============================================================================
 export { ResizablePanelGroup, ResizablePanel, ResizableHandle };
