@@ -4,6 +4,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import type { Screen } from '../../App';
+import { api } from "../../api";
 
 interface LoginProps {
   onNavigate: (screen: Screen) => void;
@@ -14,9 +15,21 @@ export default function Login({ onNavigate, onLogin }: LoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin(email);
+
+    try {
+      const res = await api.post("/auth/login", {
+        email,
+        password
+      });
+
+      alert("로그인 성공!");
+      onLogin(email);
+    } catch (err) {
+      alert("로그인 실패. 이메일/비밀번호를 확인하세요.");
+      console.error(err);
+    }
   };
 
   return (
@@ -36,6 +49,7 @@ export default function Login({ onNavigate, onLogin }: LoginProps) {
             상속 금고 관리를 위해 로그인하세요
           </CardDescription>
         </CardHeader>
+
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
@@ -49,6 +63,7 @@ export default function Login({ onNavigate, onLogin }: LoginProps) {
                 required
               />
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="password">비밀번호</Label>
               <Input
@@ -60,19 +75,13 @@ export default function Login({ onNavigate, onLogin }: LoginProps) {
                 required
               />
             </div>
-            <div className="flex justify-end">
-              <button
-                type="button"
-                className="text-sm text-blue-600 hover:underline"
-              >
-                비밀번호를 잊으셨나요?
-              </button>
-            </div>
+
             <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
               로그인
             </Button>
           </form>
         </CardContent>
+
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-sm text-center">
             계정이 없으신가요?{' '}

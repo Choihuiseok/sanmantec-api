@@ -4,6 +4,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card';
 import type { Screen } from '../../App';
+import { api } from "../../api";
 
 interface SignUpProps {
   onNavigate: (screen: Screen) => void;
@@ -14,9 +15,26 @@ export default function SignUp({ onNavigate }: SignUpProps) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    onNavigate('email-verification');
+
+    if (password !== confirmPassword) {
+      return alert("비밀번호가 일치하지 않습니다.");
+    }
+
+    try {
+      await api.post("/auth/register", {
+        email,
+        password
+      });
+
+      alert("회원가입 성공!");
+      onNavigate("login");
+
+    } catch (err) {
+      alert("회원가입 실패.");
+      console.error(err);
+    }
   };
 
   return (
@@ -36,6 +54,7 @@ export default function SignUp({ onNavigate }: SignUpProps) {
             Web3 상속 서비스로 디지털 자산을 안전하게 보호하세요
           </CardDescription>
         </CardHeader>
+
         <CardContent>
           <form onSubmit={handleSignUp} className="space-y-4">
             <div className="space-y-2">
@@ -49,6 +68,7 @@ export default function SignUp({ onNavigate }: SignUpProps) {
                 required
               />
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="password">비밀번호</Label>
               <Input
@@ -60,6 +80,7 @@ export default function SignUp({ onNavigate }: SignUpProps) {
                 required
               />
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="confirm-password">비밀번호 확인</Label>
               <Input
@@ -71,15 +92,14 @@ export default function SignUp({ onNavigate }: SignUpProps) {
                 required
               />
             </div>
+
             <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
               회원가입
             </Button>
           </form>
         </CardContent>
+
         <CardFooter className="flex flex-col space-y-4">
-          <p className="text-sm text-center text-muted-foreground">
-            상속 금고를 생성하려면 이메일 인증이 필요합니다.
-          </p>
           <div className="text-sm text-center">
             이미 계정이 있으신가요?{' '}
             <button
